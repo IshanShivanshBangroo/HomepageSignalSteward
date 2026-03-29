@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signal Steward | Research Project</title>
+    <meta
+      name="description"
+      content="Signal Steward is a research project that turns three CSCW papers into one live classroom system about signal, coordination, and social ties."
+    />
+    <style>
+      :root {
+        --bg: #070d19;
+        --bg-soft: #0d1730;
+        --panel: rgba(14, 24, 46, 0.78);
+        --panel-strong: rgba(18, 30, 56, 0.88);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: #eef4ff;
+        --muted: #bdd0f3;
+        --signal: #63d6ff;
+        --signal-2: #2b7fff;
+        --edit: #ffbe5c;
+        --edit-2: #ff883d;
+        --support: #ff8ac8;
+        --support-2: #b388ff;
+        --hero: #89e2ff;
+        --green: #6de7b7;
+        --shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 10% 10%, rgba(99, 214, 255, 0.16), transparent 28%),
+          radial-gradient(circle at 90% 12%, rgba(255, 138, 200, 0.14), transparent 24%),
+          radial-gradient(circle at 48% 88%, rgba(179, 136, 255, 0.12), transparent 30%),
+          linear-gradient(180deg, #09101d 0%, #050912 100%);
+        min-height: 100vh;
+      }
+
+      .landing-body {
+        --cursor-x: 50%;
+        --cursor-y: 30%;
+        background:
+          radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(99, 214, 255, 0.12), transparent 18%),
+          radial-gradient(circle at 10% 10%, rgba(99, 214, 255, 0.16), transparent 28%),
+          radial-gradient(circle at 90% 12%, rgba(255, 138, 200, 0.14), transparent 24%),
+          radial-gradient(circle at 48% 88%, rgba(179, 136, 255, 0.12), transparent 30%),
+          linear-gradient(180deg, #09101d 0%, #050912 100%);
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .ambient {
+        position: fixed;
+        inset: auto;
+        pointer-events: none;
+        filter: blur(90px);
+        opacity: 0.42;
+        z-index: 0;
+      }
+      .ambient-a {
+        width: 320px;
+        height: 320px;
+        left: -80px;
+        top: 180px;
+        background: rgba(99, 214, 255, 0.18);
+      }
+      .ambient-b {
+        width: 300px;
+        height: 300px;
+        right: 6%;
+        top: 420px;
+        background: rgba(255, 190, 92, 0.14);
+      }
+      .ambient-c {
+        width: 360px;
+        height: 360px;
+        left: 42%;
+        bottom: -120px;
+        background: rgba(179, 136, 255, 0.16);
+      }
+
+      .page-shell {
+        position: relative;
+        z-index: 1;
+        width: min(1280px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 28px 0 64px;
+      }
+
+      .panel,
+      .hero-card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .hero-card {
+        display: grid;
+        grid-template-columns: 1.45fr 0.9fr;
+        gap: 20px;
+        padding: 30px;
+        margin-bottom: 18px;
+        overflow: hidden;
+        position: relative;
+      }
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 15% 10%, rgba(99,214,255,0.16), transparent 22%),
+          radial-gradient(circle at 82% 20%, rgba(255,190,92,0.12), transparent 20%),
+          radial-gradient(circle at 70% 90%, rgba(179,136,255,0.12), transparent 26%);
+        pointer-events: none;
+      }
+
+      .hero-copy,
+      .hero-side {
+        position: relative;
+        z-index: 1;
+      }
+
+      .eyebrow,
+      .paper-kicker,
+      .link-kicker,
+      .view-kicker {
+        margin: 0 0 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 12px;
+        color: var(--signal);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(46px, 7vw, 82px);
+        line-height: 0.95;
+      }
+
+      .hero-tag {
+        margin: 0 0 14px;
+        font-size: clamp(19px, 2.4vw, 27px);
+        line-height: 1.3;
+        color: #d8eaff;
+        font-weight: 700;
+      }
+
+      .hero-text,
+      .intro-card p,
+      .paper-body p,
+      .process-step p,
+      .view-copy p,
+      .closing-card p,
+      .hero-note li {
+        color: var(--muted);
+        line-height: 1.72;
+        font-size: 16px;
+      }
+
+      .hero-text {
+        max-width: 72ch;
+        margin: 0 0 12px;
+      }
+
+      .hero-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 18px 0 22px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .chip-signal { box-shadow: inset 0 0 0 1px rgba(99,214,255,0.28); }
+      .chip-edit { box-shadow: inset 0 0 0 1px rgba(255,190,92,0.30); }
+      .chip-support { box-shadow: inset 0 0 0 1px rgba(255,138,200,0.28); }
+      .chip-live { box-shadow: inset 0 0 0 1px rgba(109,231,183,0.22); }
+
+      .hero-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .primary-link-card,
+      .secondary-link-card {
+        display: grid;
+        gap: 7px;
+        padding: 18px 18px 20px;
+        border-radius: 22px;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .primary-link-card {
+        background: linear-gradient(140deg, rgba(43,127,255,0.28), rgba(99,214,255,0.20));
+      }
+      .primary-link-card::after,
+      .secondary-link-card::after,
+      .paper-link::after,
+      .launch-button::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.14) 48%, transparent 76%);
+        transform: translateX(-120%);
+        transition: transform 500ms ease;
+        pointer-events: none;
+      }
+      .primary-link-card:hover::after,
+      .secondary-link-card:hover::after,
+      .paper-link:hover::after,
+      .launch-button:hover::after {
+        transform: translateX(120%);
+      }
+      .secondary-link-card {
+        background: linear-gradient(140deg, rgba(179,136,255,0.20), rgba(255,138,200,0.12));
+      }
+      .primary-link-card strong,
+      .secondary-link-card strong {
+        font-size: 21px;
+      }
+      .primary-link-card span:last-child,
+      .secondary-link-card span:last-child {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .primary-link-card:hover,
+      .secondary-link-card:hover,
+      .paper-card:hover,
+      .process-step:hover,
+      .view-card:hover,
+      .intro-card:hover,
+      .closing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 22px 42px rgba(0, 0, 0, 0.32);
+        border-color: rgba(255,255,255,0.2);
+      }
+
+      .project-credit {
+        margin: 18px 0 0;
+        color: #f5f8ff;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.01em;
+      }
+
+      .hero-side {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+
+      .hero-orbit {
+        position: relative;
+        min-height: 260px;
+        border-radius: 26px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background:
+          radial-gradient(circle at 40% 35%, rgba(99,214,255,0.20), transparent 18%),
+          radial-gradient(circle at 72% 64%, rgba(255,190,92,0.20), transparent 18%),
+          linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+        overflow: hidden;
+      }
+      .orbit {
+        position: absolute;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.16);
+      }
+      .orbit-one { inset: 28px; }
+      .orbit-two { inset: 56px; border-style: dashed; }
+      .orbit-three { inset: 86px; }
+      .hero-node {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        box-shadow: 0 0 26px currentColor;
+      }
+      .node-a { top: 30px; left: 118px; color: var(--signal); background: var(--signal); }
+      .node-b { top: 96px; right: 46px; color: var(--edit); background: var(--edit); }
+      .node-c { bottom: 54px; left: 64px; color: var(--support); background: var(--support); }
+      .node-d { bottom: 96px; right: 112px; color: var(--green); background: var(--green); }
+
+      .panel-inset {
+        border-radius: 22px;
+        padding: 18px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      .hero-note-kicker {
+        margin: 0 0 10px;
+        font-weight: 700;
+        color: #e7efff;
+      }
+
+      .clean-list {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .clean-list li {
+        margin-bottom: 8px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .section-head h2 {
+        margin: 0;
+        font-size: clamp(28px, 3vw, 38px);
+        line-height: 1.15;
+      }
+
+      .section-pill {
+        padding: 9px 13px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.04);
+        color: var(--muted);
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .intro-card,
+      .process-card,
+      .closing-card {
+        padding: 24px;
+        margin-bottom: 18px;
+      }
+
+      .paper-section,
+      .live-views {
+        margin-bottom: 18px;
+      }
+
+      .paper-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .paper-card {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        padding: 18px;
+        gap: 16px;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      }
+
+      .paper-card h3 {
+        margin: 0 0 6px;
+        font-size: 24px;
+        line-height: 1.2;
+      }
+      .paper-authors {
+        margin-top: 0;
+        font-weight: 600;
+      }
+      .paper-body {
+        display: grid;
+        gap: 10px;
+      }
+      .paper-why {
+        color: #f5f8ff !important;
+      }
+      .paper-link {
+        width: fit-content;
+        margin-top: 4px;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 15px;
+        border-radius: 16px;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.05);
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      }
+      .paper-link:hover {
+        border-color: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.08);
+      }
+
+      .signal-card { box-shadow: inset 0 0 0 1px rgba(99,214,255,0.26), var(--shadow); }
+      .edit-card { box-shadow: inset 0 0 0 1px rgba(255,190,92,0.26), var(--shadow); }
+      .support-card { box-shadow: inset 0 0 0 1px rgba(255,138,200,0.24), var(--shadow); }
+
+      .paper-visual {
+        min-height: 152px;
+        border-radius: 22px;
+        border: 1px solid rgba(255,255,255,0.10);
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .signal-visual {
+        background: radial-gradient(circle at 20% 20%, rgba(99,214,255,0.20), transparent 30%), rgba(16, 35, 62, 0.88);
+      }
+      .edit-visual {
+        background: radial-gradient(circle at 74% 24%, rgba(255,190,92,0.20), transparent 28%), rgba(32, 24, 12, 0.36);
+      }
+      .support-visual {
+        background: radial-gradient(circle at 18% 76%, rgba(255,138,200,0.18), transparent 26%), rgba(34, 20, 49, 0.38);
+      }
+      .paper-visual svg {
+        width: 100%;
+        height: auto;
+      }
+
+      .process-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .process-step {
+        border-radius: 22px;
+        padding: 18px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.04);
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      }
+      .signal-step { background: linear-gradient(180deg, rgba(99,214,255,0.10), rgba(255,255,255,0.03)); }
+      .edit-step { background: linear-gradient(180deg, rgba(255,190,92,0.10), rgba(255,255,255,0.03)); }
+      .support-step { background: linear-gradient(180deg, rgba(255,138,200,0.10), rgba(255,255,255,0.03)); }
+      .debate-step { background: linear-gradient(180deg, rgba(179,136,255,0.10), rgba(255,255,255,0.03)); }
+
+      .step-index {
+        display: inline-flex;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-bottom: 12px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.05);
+      }
+
+      .process-step h3,
+      .view-card h3 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+
+      .view-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .view-card {
+        padding: 18px;
+        display: grid;
+        gap: 16px;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      }
+      .image-frame {
+        overflow: hidden;
+        border-radius: 22px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: #0a1222;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        position: relative;
+        min-height: clamp(230px, 28vw, 320px);
+      }
+      .image-frame img {
+        width: 100%;
+        height: clamp(230px, 28vw, 320px);
+        object-fit: cover;
+      }
+      .view-shot {
+        position: relative;
+        z-index: 1;
+      }
+      .view-fallback {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 18px;
+        background:
+          radial-gradient(circle at 22% 18%, rgba(99,214,255,0.18), transparent 28%),
+          radial-gradient(circle at 80% 80%, rgba(255,190,92,0.16), transparent 24%),
+          linear-gradient(180deg, #09152a 0%, #07101d 100%);
+      }
+      .view-fallback[hidden] {
+        display: none;
+      }
+      .fallback-screen {
+        width: 100%;
+        height: 100%;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+      }
+      .fallback-bar {
+        height: 10px;
+        width: 42%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.28), rgba(255,255,255,0.08));
+      }
+      .fallback-card {
+        min-height: 64px;
+        border-radius: 16px;
+        padding: 14px;
+        font-weight: 600;
+        line-height: 1.5;
+        color: #eff8ff;
+        display: flex;
+        align-items: center;
+      }
+      .signal-tone {
+        background: linear-gradient(140deg, rgba(43,127,255,0.26), rgba(99,214,255,0.18));
+        border: 1px solid rgba(99,214,255,0.18);
+      }
+      .fallback-lines {
+        display: grid;
+        gap: 8px;
+      }
+      .fallback-lines span,
+      .fallback-input,
+      .fallback-pill-row span,
+      .fallback-button-row span,
+      .fallback-board,
+      .fallback-metric {
+        display: block;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      .fallback-lines span:nth-child(1) { width: 92%; height: 10px; }
+      .fallback-lines span:nth-child(2) { width: 76%; height: 10px; }
+      .fallback-lines span:nth-child(3) { width: 84%; height: 10px; }
+      .fallback-input { height: 44px; }
+      .fallback-pill-row,
+      .fallback-button-row,
+      .fallback-grid {
+        display: flex;
+        gap: 10px;
+      }
+      .fallback-pill-row span {
+        width: 74px;
+        height: 28px;
+        border-radius: 999px;
+      }
+      .fallback-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .fallback-metric { height: 72px; }
+      .fallback-board { min-height: 108px; }
+      .fallback-button-row span {
+        width: 110px;
+        height: 34px;
+        border-radius: 14px;
+      }
+      .participant-fallback .fallback-board,
+      .participant-fallback .fallback-grid,
+      .facilitator-fallback .fallback-lines,
+      .facilitator-fallback .fallback-input,
+      .facilitator-fallback .fallback-pill-row,
+      .participant-fallback .fallback-button-row {
+        display: none;
+      }
+      .view-copy {
+        display: grid;
+        gap: 10px;
+      }
+
+      .launch-button {
+        position: relative;
+        overflow: hidden;
+        width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        border-radius: 16px;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+      }
+      .primary-launch {
+        background: linear-gradient(140deg, rgba(43,127,255,0.32), rgba(99,214,255,0.20));
+      }
+      .secondary-launch {
+        background: linear-gradient(140deg, rgba(255,190,92,0.18), rgba(179,136,255,0.18));
+      }
+      .launch-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 34px rgba(0,0,0,0.26);
+        border-color: rgba(255,255,255,0.18);
+      }
+
+      .interactive-tilt {
+        will-change: transform;
+      }
+
+      .cursor-dot,
+      .cursor-ring,
+      .click-burst {
+        position: fixed;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        z-index: 9999;
+      }
+      .cursor-dot {
+        width: 8px;
+        height: 8px;
+        margin-left: -4px;
+        margin-top: -4px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.88);
+        mix-blend-mode: screen;
+      }
+      .cursor-ring {
+        width: 40px;
+        height: 40px;
+        margin-left: -20px;
+        margin-top: -20px;
+        border-radius: 50%;
+        border: 1px solid rgba(99,214,255,0.46);
+        box-shadow: 0 0 24px rgba(99,214,255,0.22);
+        transition:
+          width 120ms ease,
+          height 120ms ease,
+          margin-left 120ms ease,
+          margin-top 120ms ease,
+          border-color 120ms ease,
+          box-shadow 120ms ease;
+      }
+      .cursor-ring.cursor-active {
+        width: 58px;
+        height: 58px;
+        margin-left: -29px;
+        margin-top: -29px;
+      }
+      .click-burst {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(99,214,255,0.95);
+      }
+
+      @media (max-width: 1120px) {
+        .hero-card {
+          grid-template-columns: 1fr;
+        }
+        .paper-grid,
+        .process-grid,
+        .view-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 800px) {
+        .page-shell {
+          width: min(100% - 24px, 100%);
+          padding-top: 18px;
+        }
+        .hero-card,
+        .panel,
+        .intro-card,
+        .process-card,
+        .closing-card {
+          border-radius: 24px;
+        }
+        .hero-actions {
+          grid-template-columns: 1fr;
+        }
+        .section-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .hero-copy,
+        .hero-side,
+        .intro-card,
+        .process-card,
+        .closing-card,
+        .view-card,
+        .paper-card {
+          gap: 12px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .interactive-tilt,
+        .primary-link-card,
+        .secondary-link-card,
+        .paper-card,
+        .process-step,
+        .view-card,
+        .launch-button,
+        .paper-link {
+          transition: none !important;
+        }
+        .ambient,
+        .cursor-dot,
+        .cursor-ring,
+        .click-burst {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="landing-body">
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="ambient ambient-c"></div>
+
+    <main class="page-shell">
+      <header class="hero-card panel interactive-tilt" data-cursor="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Research project</p>
+          <h1>Signal Steward</h1>
+          <p class="hero-tag">From three CSCW papers to one live classroom system.</p>
+          <p class="hero-text">
+            This project came out of a simple question: if one paper is about what makes a public update useful,
+            another is about how crowds keep shared knowledge good, and a third is about how ties carry reach,
+            trust, and support, can those ideas become one activity people can actually use?
+          </p>
+          <p class="hero-text">
+            Signal Steward is my answer. Everyone in class joins as a participant. I am the only facilitator.
+            The system turns three short responses into a visible stance card, a live wall, and two balanced debate teams.
+          </p>
+
+          <div class="hero-chips">
+            <span class="chip chip-signal">Signal</span>
+            <span class="chip chip-edit">Edit</span>
+            <span class="chip chip-support">Support</span>
+            <span class="chip chip-live">Live classroom system</span>
+          </div>
+
+          <div class="hero-actions">
+            <a class="primary-link-card" data-cursor="signal" href="https://signalsteward.pages.dev/" target="_blank" rel="noreferrer">
+              <span class="link-kicker">Whole class</span>
+              <strong>Open participant view</strong>
+              <span>The page everyone joins during the activity.</span>
+            </a>
+            <a class="secondary-link-card" data-cursor="edit" href="https://signalsteward.pages.dev/facilitator" target="_blank" rel="noreferrer">
+              <span class="link-kicker">Instructor only</span>
+              <strong>Open facilitator console</strong>
+              <span>The page I use to refresh, build teams, and run the debate.</span>
+            </a>
+          </div>
+
+          <p class="project-credit">
+            Inspired by Prof. Yubo Kou | Developed by Ishan Shivansh Bangroo | Contributor: Nicole Leon
+          </p>
+        </div>
+
+        <aside class="hero-side">
+          <div class="hero-orbit" aria-hidden="true">
+            <span class="orbit orbit-one"></span>
+            <span class="orbit orbit-two"></span>
+            <span class="orbit orbit-three"></span>
+            <span class="hero-node node-a"></span>
+            <span class="hero-node node-b"></span>
+            <span class="hero-node node-c"></span>
+            <span class="hero-node node-d"></span>
+          </div>
+          <div class="hero-note panel-inset">
+            <p class="hero-note-kicker">What this page gives you</p>
+            <ul class="clean-list">
+              <li>The three papers in plain English</li>
+              <li>Why they matter for this system</li>
+              <li>How the classroom flow works</li>
+              <li>Direct links to the live participant and facilitator views</li>
+            </ul>
+          </div>
+        </aside>
+      </header>
+
+      <section class="panel intro-card interactive-tilt" data-cursor="hero">
+        <div class="section-head">
+          <h2>What this project is really doing</h2>
+          <span class="section-pill">Plain English</span>
+        </div>
+        <p>
+          The point here is not just to summarize papers. The point is to make people act on them. A participant has to
+          decide what a useful update looks like, how a shared page stays reliable, and which ties they would activate first.
+          After that, the system turns those choices into a visible stance and a debate setup. So the reading becomes a live,
+          social decision instead of a slide summary.
+        </p>
+      </section>
+
+      <section class="paper-section">
+        <div class="section-head">
+          <h2>The three papers behind Signal Steward</h2>
+          <span class="section-pill">Research grounding</span>
+        </div>
+
+        <div class="paper-grid">
+          <article class="paper-card panel interactive-tilt signal-card" data-cursor="signal">
+            <div class="paper-visual signal-visual" aria-hidden="true">
+              <svg viewBox="0 0 240 140" role="img" aria-label="">
+                <defs>
+                  <linearGradient id="sigGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#63d6ff" />
+                    <stop offset="100%" stop-color="#2b7fff" />
+                  </linearGradient>
+                </defs>
+                <path d="M18 92c18-14 34-22 49-24 16-2 26 5 38 5 17 0 30-17 48-17 23 0 35 26 69 25" fill="none" stroke="url(#sigGrad)" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="38" cy="88" r="7" fill="#63d6ff" />
+                <circle cx="92" cy="72" r="7" fill="#89e2ff" />
+                <circle cx="147" cy="57" r="7" fill="#b1f0ff" />
+                <circle cx="205" cy="82" r="7" fill="#63d6ff" />
+                <rect x="154" y="16" width="55" height="22" rx="11" fill="rgba(99,214,255,.18)" stroke="rgba(99,214,255,.38)" />
+                <text x="181.5" y="31" text-anchor="middle" fill="#dff7ff" font-size="11" font-family="Inter, Arial, sans-serif">where / what / now</text>
+              </svg>
+            </div>
+            <div class="paper-body">
+              <p class="paper-kicker">Paper 1 · Signal</p>
+              <h3>Microblogging During Two Natural Hazards Events</h3>
+              <p class="paper-authors">Vieweg, Hughes, Starbird, and Palen</p>
+              <p>
+                This paper looks at Twitter during floods and grassfires. Its core point is that the useful posts are not
+                just fast. They are specific enough to help other people build situational awareness: where something is,
+                what changed, what danger is present, and what people should do next.
+              </p>
+              <p class="paper-why">
+                In Signal Steward, that becomes the first move. Participants have to write the kind of public update that
+                would actually help another person.
+              </p>
+              <a class="paper-link" href="https://doi.org/10.1145/1753326.1753486" target="_blank" rel="noreferrer">Read the paper</a>
+            </div>
+          </article>
+
+          <article class="paper-card panel interactive-tilt edit-card" data-cursor="edit">
+            <div class="paper-visual edit-visual" aria-hidden="true">
+              <svg viewBox="0 0 240 140" role="img" aria-label="">
+                <rect x="26" y="24" width="64" height="88" rx="12" fill="rgba(255,190,92,.18)" stroke="rgba(255,190,92,.34)" />
+                <rect x="98" y="16" width="64" height="96" rx="12" fill="rgba(255,136,61,.18)" stroke="rgba(255,136,61,.34)" />
+                <rect x="170" y="30" width="44" height="82" rx="12" fill="rgba(255,215,136,.16)" stroke="rgba(255,215,136,.32)" />
+                <path d="M41 51h34M41 67h25M113 43h34M113 59h30M113 75h20M182 55h20M182 71h16" stroke="#ffe9c4" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="194" cy="24" r="12" fill="#ffbe5c" />
+                <path d="M194 17v14M187 24h14" stroke="#2d1b00" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="paper-body">
+              <p class="paper-kicker">Paper 2 · Edit</p>
+              <h3>Harnessing the Wisdom of Crowds in Wikipedia</h3>
+              <p class="paper-authors">Kittur and Kraut</p>
+              <p>
+                This paper argues that more contributors do not automatically make a shared page better. Quality improves
+                when coordination is present. A crowd helps when the work is structured, responsibilities are clearer, and
+                editing does not collapse into noise.
+              </p>
+              <p class="paper-why">
+                In Signal Steward, that becomes the second move. Participants have to explain how a shared page should be
+                organized so openness still leads to quality.
+              </p>
+              <a class="paper-link" href="https://doi.org/10.1145/1460563.1460572" target="_blank" rel="noreferrer">Read the paper</a>
+            </div>
+          </article>
+
+          <article class="paper-card panel interactive-tilt support-card" data-cursor="support">
+            <div class="paper-visual support-visual" aria-hidden="true">
+              <svg viewBox="0 0 240 140" role="img" aria-label="">
+                <defs>
+                  <linearGradient id="supGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ff8ac8" />
+                    <stop offset="100%" stop-color="#b388ff" />
+                  </linearGradient>
+                </defs>
+                <circle cx="48" cy="74" r="14" fill="url(#supGrad)" />
+                <circle cx="112" cy="40" r="11" fill="#ffb0db" />
+                <circle cx="112" cy="104" r="11" fill="#d3a4ff" />
+                <circle cx="182" cy="72" r="15" fill="#c38cff" />
+                <circle cx="208" cy="30" r="9" fill="#ff8ac8" />
+                <circle cx="210" cy="114" r="9" fill="#b388ff" />
+                <path d="M60 68 102 46M60 80 102 98M123 43 167 67M123 101 167 77M191 62 203 38M193 83 203 107" stroke="rgba(238,225,255,.82)" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="paper-body">
+              <p class="paper-kicker">Paper 3 · Support</p>
+              <h3>The Benefits of Facebook “Friends”</h3>
+              <p class="paper-authors">Ellison, Steinfield, and Lampe</p>
+              <p>
+                This paper shows that online ties do different jobs. Bridging ties bring reach and new perspectives,
+                bonding ties bring trust and support, and maintained ties help people stay connected across life changes.
+                The strongest pattern in the study is around bridging social capital.
+              </p>
+              <p class="paper-why">
+                In Signal Steward, that becomes the third move. Participants decide which ties they would activate first
+                and what should stay public or remain bounded to smaller trusted groups.
+              </p>
+              <a class="paper-link" href="https://doi.org/10.1111/j.1083-6101.2007.00367.x" target="_blank" rel="noreferrer">Read the paper</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel process-card interactive-tilt" data-cursor="hero">
+        <div class="section-head">
+          <h2>How the activity is inspired by the papers</h2>
+          <span class="section-pill">From reading to action</span>
+        </div>
+
+        <div class="process-grid">
+          <article class="process-step signal-step">
+            <span class="step-index">01</span>
+            <h3>Signal</h3>
+            <p>
+              Participants write the first public update. The system is looking at whether the response gives concrete,
+              useful signal rather than vague commentary.
+            </p>
+          </article>
+          <article class="process-step edit-step">
+            <span class="step-index">02</span>
+            <h3>Edit</h3>
+            <p>
+              Participants explain how a shared page should work when many people want to contribute. This is where
+              coordination, structure, and stewardship come in.
+            </p>
+          </article>
+          <article class="process-step support-step">
+            <span class="step-index">03</span>
+            <h3>Support</h3>
+            <p>
+              Participants decide which ties to activate first and how visible information should be. This is where reach,
+              trust, and bounded sharing start to pull against each other.
+            </p>
+          </article>
+          <article class="process-step debate-step">
+            <span class="step-index">04</span>
+            <h3>Debate</h3>
+            <p>
+              The system turns those choices into stance cards and balanced teams, then surfaces the bigger question:
+              when should a system favor openness, and when should it favor tighter coordination and selective visibility?
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="live-views">
+        <div class="section-head">
+          <h2>Live views</h2>
+          <span class="section-pill">What people actually use</span>
+        </div>
+
+        <div class="view-grid">
+          <article class="view-card panel interactive-tilt" data-cursor="signal">
+            <div class="image-frame">
+              <img src="./assets/participant-view.png" alt="Signal Steward participant view screenshot" class="view-shot" />
+              <div class="view-fallback participant-fallback" hidden>
+                <div class="fallback-screen">
+                  <div class="fallback-bar"></div>
+                  <div class="fallback-card signal-tone">Three short prompts about signal, edit, and support</div>
+                  <div class="fallback-lines">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="fallback-input"></div>
+                  <div class="fallback-pill-row">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="view-copy">
+              <p class="view-kicker">Participant view</p>
+              <h3>The page the whole class joins</h3>
+              <p>
+                A participant enters their name, answers three prompts, gets a stance number, and sees a short public card.
+                This is the page everyone opens during the activity.
+              </p>
+              <a class="launch-button primary-launch" href="https://signalsteward.pages.dev/" target="_blank" rel="noreferrer">Launch participant view</a>
+            </div>
+          </article>
+
+          <article class="view-card panel interactive-tilt" data-cursor="edit">
+            <div class="image-frame">
+              <img src="./assets/facilitator-view.png" alt="Signal Steward facilitator console screenshot" class="view-shot" />
+              <div class="view-fallback facilitator-fallback" hidden>
+                <div class="fallback-screen">
+                  <div class="fallback-bar"></div>
+                  <div class="fallback-grid">
+                    <div class="fallback-metric"></div>
+                    <div class="fallback-metric"></div>
+                    <div class="fallback-metric"></div>
+                  </div>
+                  <div class="fallback-board"></div>
+                  <div class="fallback-button-row">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="view-copy">
+              <p class="view-kicker">Facilitator console</p>
+              <h3>The page I use in the room</h3>
+              <p>
+                This console lets me refresh the session, read the live wall, build balanced teams, and guide the final
+                debate. It is meant for one facilitator, not for the full class.
+              </p>
+              <a class="launch-button secondary-launch" href="https://signalsteward.pages.dev/facilitator" target="_blank" rel="noreferrer">Launch facilitator console</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <script type="module">
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+      const cursorColors = {
+        hero: ['rgba(109, 231, 183, 0.65)', 'rgba(109, 231, 183, 0.22)'],
+        signal: ['rgba(99, 214, 255, 0.72)', 'rgba(99, 214, 255, 0.28)'],
+        edit: ['rgba(255, 190, 92, 0.72)', 'rgba(255, 190, 92, 0.24)'],
+        support: ['rgba(255, 138, 200, 0.72)', 'rgba(179, 136, 255, 0.22)']
+      };
+
+      function initCursorEffects() {
+        if (prefersReducedMotion || !finePointer) return;
+
+        const dot = document.createElement('div');
+        dot.className = 'cursor-dot';
+        const ring = document.createElement('div');
+        ring.className = 'cursor-ring';
+        document.body.append(dot, ring);
+
+        let ringX = window.innerWidth / 2;
+        let ringY = window.innerHeight / 2;
+        let targetX = ringX;
+        let targetY = ringY;
+        let rafId = null;
+
+        const animateRing = () => {
+          ringX += (targetX - ringX) * 0.18;
+          ringY += (targetY - ringY) * 0.18;
+          ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+          rafId = requestAnimationFrame(animateRing);
+        };
+
+        const setRingColor = (key = 'signal') => {
+          const colors = cursorColors[key] || cursorColors.signal;
+          ring.style.borderColor = colors[0];
+          ring.style.boxShadow = `0 0 26px ${colors[1]}`;
+        };
+
+        const updatePointer = (event) => {
+          targetX = event.clientX;
+          targetY = event.clientY;
+          dot.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+          document.body.style.setProperty('--cursor-x', `${event.clientX}px`);
+          document.body.style.setProperty('--cursor-y', `${event.clientY}px`);
+          if (!rafId) rafId = requestAnimationFrame(animateRing);
+        };
+
+        const activateRing = () => ring.classList.add('cursor-active');
+        const relaxRing = () => ring.classList.remove('cursor-active');
+
+        const spawnBurst = (event) => {
+          const palette = ['#63d6ff', '#ffbe5c', '#ff8ac8', '#b388ff'];
+          const total = 12;
+          for (let i = 0; i < total; i += 1) {
+            const particle = document.createElement('span');
+            particle.className = 'click-burst';
+            particle.style.background = palette[i % palette.length];
+            particle.style.boxShadow = `0 0 16px ${palette[i % palette.length]}`;
+            const angle = (Math.PI * 2 * i) / total + Math.random() * 0.35;
+            const distance = 24 + Math.random() * 48;
+            const endX = Math.cos(angle) * distance;
+            const endY = Math.sin(angle) * distance;
+            particle.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+            document.body.appendChild(particle);
+            particle.animate(
+              [
+                { transform: `translate(${event.clientX}px, ${event.clientY}px) scale(1)`, opacity: 1 },
+                { transform: `translate(${event.clientX + endX}px, ${event.clientY + endY}px) scale(0.18)`, opacity: 0 }
+              ],
+              { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+            ).finished.finally(() => particle.remove());
+          }
+        };
+
+        window.addEventListener('pointermove', updatePointer, { passive: true });
+        window.addEventListener('pointerdown', (event) => {
+          activateRing();
+          spawnBurst(event);
+        }, { passive: true });
+        window.addEventListener('pointerup', relaxRing, { passive: true });
+
+        document.querySelectorAll('[data-cursor]').forEach((node) => {
+          const key = node.getAttribute('data-cursor');
+          node.addEventListener('pointerenter', () => {
+            activateRing();
+            setRingColor(key);
+          });
+          node.addEventListener('pointerleave', () => {
+            relaxRing();
+            setRingColor('signal');
+          });
+        });
+
+        setRingColor('signal');
+      }
+
+      function initTiltCards() {
+        if (prefersReducedMotion || !finePointer) return;
+
+        const cards = document.querySelectorAll('.interactive-tilt');
+        cards.forEach((card) => {
+          let frame = null;
+          const handleMove = (event) => {
+            const rect = card.getBoundingClientRect();
+            const px = (event.clientX - rect.left) / rect.width;
+            const py = (event.clientY - rect.top) / rect.height;
+            const rotateY = (px - 0.5) * 5;
+            const rotateX = (0.5 - py) * 5;
+            card.style.transform = `perspective(1100px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+            if (frame) cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+              card.style.setProperty('--glow-x', `${px * 100}%`);
+              card.style.setProperty('--glow-y', `${py * 100}%`);
+            });
+          };
+
+          const handleLeave = () => {
+            card.style.transform = '';
+          };
+
+          card.addEventListener('pointermove', handleMove);
+          card.addEventListener('pointerleave', handleLeave);
+        });
+      }
+
+      initCursorEffects();
+      initTiltCards();
+
+
+      function initImageFallbacks() {
+        document.querySelectorAll('.image-frame').forEach((frame) => {
+          const img = frame.querySelector('.view-shot');
+          const fallback = frame.querySelector('.view-fallback');
+          if (!img || !fallback) return;
+
+          const showFallback = () => {
+            img.style.display = 'none';
+            fallback.hidden = false;
+          };
+
+          img.addEventListener('error', showFallback);
+
+          if (img.complete && img.naturalWidth === 0) {
+            showFallback();
+          }
+        });
+      }
+
+      initImageFallbacks();
+    </script>
+  </body>
+</html>
